@@ -2,6 +2,10 @@
 
 Aplicacao de habitos reconstruida com `Vite`, `React` e `TypeScript`, com foco em usabilidade real, visual moderno e responsividade.
 
+## Demo
+
+- Site publicado: https://controle-de-habitos-delta.vercel.app/
+
 ## O que o projeto entrega
 
 - dashboard com resumo diario e consistencia semanal
