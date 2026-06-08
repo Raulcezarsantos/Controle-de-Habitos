@@ -1,4 +1,4 @@
-import { useDeferredValue, useState } from 'react'
+import { useDeferredValue, useMemo, useState } from 'react'
 import { CalendarRange, Filter, RefreshCcw, Sparkles, Target } from 'lucide-react'
 
 import { HabitCard } from './components/HabitCard'
@@ -11,16 +11,28 @@ import { getSummary, isHabitDoneOnDay } from './lib/habits'
 import type { HabitFilter } from './types'
 
 function App() {
-  const { habits, addHabit, removeHabit, resetHabits, toggleHabitForDay } =
+  const {
+    habits,
+    addHabit,
+    updateHabit,
+    removeHabit,
+    resetHabits,
+    toggleHabitForDay,
+  } =
     useHabitStore()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<HabitFilter>('all')
+  const [editingHabitId, setEditingHabitId] = useState<string | null>(null)
   const deferredQuery = useDeferredValue(query)
 
   const todayKey = getTodayKey()
   const weekDays = getWeekDays()
   const weekKeys = weekDays.map((day) => day.key)
   const summary = getSummary(habits, todayKey, weekKeys)
+  const editingHabit = useMemo(
+    () => habits.find((habit) => habit.id === editingHabitId) ?? null,
+    [editingHabitId, habits],
+  )
 
   const filteredHabits = habits.filter((habit) => {
     const matchesQuery =
@@ -42,6 +54,29 @@ function App() {
     return true
   })
 
+  function handleComposerSubmit(draft: Parameters<typeof addHabit>[0]) {
+    if (editingHabit) {
+      updateHabit(editingHabit.id, draft)
+      setEditingHabitId(null)
+      return
+    }
+
+    addHabit(draft)
+  }
+
+  function handleDeleteHabit(habitId: string) {
+    if (editingHabitId === habitId) {
+      setEditingHabitId(null)
+    }
+
+    removeHabit(habitId)
+  }
+
+  function handleResetHabits() {
+    setEditingHabitId(null)
+    resetHabits()
+  }
+
   return (
     <div className="app-shell">
       <header className="hero-panel">
@@ -54,7 +89,7 @@ function App() {
             </div>
           </div>
 
-          <button type="button" className="secondary-button" onClick={resetHabits}>
+          <button type="button" className="secondary-button" onClick={handleResetHabits}>
             <RefreshCcw size={16} />
             Resetar demo
           </button>
@@ -170,7 +205,8 @@ function App() {
                     todayKey={todayKey}
                     weekKeys={weekKeys}
                     onToggleToday={(habitId) => toggleHabitForDay(habitId, todayKey)}
-                    onDelete={removeHabit}
+                    onDelete={handleDeleteHabit}
+                    onEdit={setEditingHabitId}
                   />
                 ))}
               </div>
@@ -193,7 +229,12 @@ function App() {
         </div>
 
         <aside className="content-side">
-          <HabitComposer onSubmit={addHabit} />
+          <HabitComposer
+            key={editingHabit?.id ?? 'new-habit'}
+            onSubmit={handleComposerSubmit}
+            editingHabit={editingHabit}
+            onCancelEdit={() => setEditingHabitId(null)}
+          />
 
           <section className="panel insights-panel">
             <div className="panel-heading">

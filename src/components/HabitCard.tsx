@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { Check, Flame, Trash2 } from 'lucide-react'
+import { Check, Flame, PencilLine, Trash2 } from 'lucide-react'
 
 import { getHabitStatusLabel, getHabitStreak, isHabitDoneOnDay } from '../lib/habits'
 import type { Habit } from '../types'
@@ -10,6 +10,7 @@ type HabitCardProps = {
   weekKeys: string[]
   onToggleToday: (habitId: string) => void
   onDelete: (habitId: string) => void
+  onEdit: (habitId: string) => void
 }
 
 export function HabitCard({
@@ -18,6 +19,7 @@ export function HabitCard({
   weekKeys,
   onToggleToday,
   onDelete,
+  onEdit,
 }: HabitCardProps) {
   const isDoneToday = isHabitDoneOnDay(habit, todayKey)
   const streak = getHabitStreak(habit)
@@ -33,14 +35,24 @@ export function HabitCard({
           <span>{habit.category}</span>
           <h3>{habit.name}</h3>
         </div>
-        <button
-          type="button"
-          className="ghost-icon-button"
-          aria-label={`Remover ${habit.name}`}
-          onClick={() => onDelete(habit.id)}
-        >
-          <Trash2 size={16} />
-        </button>
+        <div className="habit-card__actions">
+          <button
+            type="button"
+            className="ghost-icon-button"
+            aria-label={`Editar ${habit.name}`}
+            onClick={() => onEdit(habit.id)}
+          >
+            <PencilLine size={16} />
+          </button>
+          <button
+            type="button"
+            className="ghost-icon-button"
+            aria-label={`Remover ${habit.name}`}
+            onClick={() => onDelete(habit.id)}
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
       </div>
 
       <p>{habit.description || 'Habito sem descricao detalhada ainda.'}</p>

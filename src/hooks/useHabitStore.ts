@@ -41,6 +41,19 @@ export function useHabitStore() {
     ])
   }
 
+  function updateHabit(habitId: string, draft: HabitDraft) {
+    setHabits((current) =>
+      current.map((habit) =>
+        habit.id === habitId
+          ? {
+              ...habit,
+              ...draft,
+            }
+          : habit,
+      ),
+    )
+  }
+
   function toggleHabitForDay(habitId: string, dayKey: string) {
     setHabits((current) =>
       current.map((habit) => {
@@ -69,6 +82,7 @@ export function useHabitStore() {
   return {
     habits,
     addHabit,
+    updateHabit,
     toggleHabitForDay,
     removeHabit,
     resetHabits,

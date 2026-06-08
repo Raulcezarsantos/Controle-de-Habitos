@@ -1,10 +1,12 @@
-import { useState, type CSSProperties, type FormEvent } from 'react'
+import { useMemo, useState, type CSSProperties, type FormEvent } from 'react'
 
 import { weekdayLabels } from '../lib/habits'
-import type { HabitDraft } from '../types'
+import type { Habit, HabitDraft } from '../types'
 
 type HabitComposerProps = {
   onSubmit: (draft: HabitDraft) => void
+  editingHabit?: Habit | null
+  onCancelEdit?: () => void
 }
 
 const accentPresets = ['#5eead4', '#38bdf8', '#f59e0b', '#fb7185', '#c084fc']
@@ -18,8 +20,27 @@ const initialDraft: HabitDraft = {
   accent: accentPresets[0],
 }
 
-export function HabitComposer({ onSubmit }: HabitComposerProps) {
-  const [draft, setDraft] = useState(initialDraft)
+export function HabitComposer({
+  onSubmit,
+  editingHabit = null,
+  onCancelEdit,
+}: HabitComposerProps) {
+  const baseDraft = useMemo(() => {
+    if (!editingHabit) {
+      return initialDraft
+    }
+
+    return {
+      name: editingHabit.name,
+      category: editingHabit.category,
+      description: editingHabit.description,
+      weeklyTarget: editingHabit.weeklyTarget,
+      preferredDays: editingHabit.preferredDays,
+      accent: editingHabit.accent,
+    }
+  }, [editingHabit])
+
+  const [draft, setDraft] = useState(baseDraft)
 
   function toggleDay(day: number) {
     setDraft((current) => {
@@ -53,11 +74,18 @@ export function HabitComposer({ onSubmit }: HabitComposerProps) {
   return (
     <section className="panel composer-panel">
       <div className="panel-heading">
-        <span className="eyebrow">Novo habito</span>
-        <h2>Monte uma rotina com cara de produto real</h2>
+        <span className="eyebrow">
+          {editingHabit ? 'Editar habito' : 'Novo habito'}
+        </span>
+        <h2>
+          {editingHabit
+            ? 'Atualize a rotina sem perder seu historico'
+            : 'Monte uma rotina com cara de produto real'}
+        </h2>
         <p>
-          Defina objetivo semanal, dias preferidos e uma cor para diferenciar
-          seus blocos.
+          {editingHabit
+            ? 'Ajuste nome, categoria, meta e dias preferidos mantendo os check-ins ja registrados.'
+            : 'Defina objetivo semanal, dias preferidos e uma cor para diferenciar seus blocos.'}
         </p>
       </div>
 
@@ -162,9 +190,20 @@ export function HabitComposer({ onSubmit }: HabitComposerProps) {
           </div>
         </fieldset>
 
-        <button className="primary-button" type="submit">
-          Criar habito
-        </button>
+        <div className="composer-actions">
+          <button className="primary-button" type="submit">
+            {editingHabit ? 'Salvar alteracoes' : 'Criar habito'}
+          </button>
+          {editingHabit ? (
+            <button
+              className="secondary-button secondary-button--ghost"
+              type="button"
+              onClick={onCancelEdit}
+            >
+              Cancelar edicao
+            </button>
+          ) : null}
+        </div>
       </form>
     </section>
   )

@@ -168,6 +168,10 @@ button {
   border: 1px solid var(--border-soft);
 }
 
+.secondary-button--ghost {
+  background: rgba(9, 19, 31, 0.84);
+}
+
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.9fr);
@@ -355,6 +359,17 @@ button {
   gap: 1rem;
 }
 
+.content-side {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  align-self: start;
+  padding-right: 0.2rem;
+}
+
 .panel {
   border-radius: 1.75rem;
   padding: 1.25rem;
@@ -389,6 +404,11 @@ button {
 .habit-card__header {
   align-items: flex-start;
   justify-content: space-between;
+}
+
+.habit-card__actions {
+  display: flex;
+  gap: 0.55rem;
 }
 
 .habit-card__header h3 {
@@ -426,8 +446,9 @@ button {
 }
 
 .composer-panel {
-  position: sticky;
-  top: 1rem;
+  position: static;
+  max-height: none;
+  overflow: visible;
 }
 
 .composer-form label,
@@ -450,6 +471,11 @@ button {
 .composer-form textarea {
   min-height: 6rem;
   resize: vertical;
+}
+
+.composer-actions {
+  display: flex;
+  gap: 0.85rem;
 }
 
 .form-grid {
@@ -581,6 +607,14 @@ button {
 
   .composer-panel {
     position: static;
+    overflow: visible;
+  }
+
+  .content-side {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
   }
 }
 
@@ -607,6 +641,10 @@ button {
   .primary-button,
   .check-button {
     width: 100%;
+  }
+
+  .composer-actions {
+    flex-direction: column;
   }
 
   .form-grid {
